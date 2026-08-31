@@ -1,0 +1,2 @@
+:HL["/pinocchio/_next/static/css/f6c4b91ce3fee591.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"path","param":{"type":"c","key":"book/ch28/r04","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"LTnFIT1edtlDV2oUQ7oKr"}

@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[2229,[],"ViewportBoundary"]
+3:I[2229,[],"MetadataBoundary"]
+4:"$Sreact.suspense"
+5:I[7072,[],"IconMark"]
+0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"再等两分钟 · 远处的车灯 · 奇遇之书"}],["$","meta","1",{"name":"description","content":"匹诺曹原本只是留下看车，车灯真正出现时，他的想法却越来越靠近出发。危险的决定并非突然从天而降，而是由一次次不愿结束谈话、一次次推迟离开累积起来的。"}],["$","meta","2",{"property":"og:title","content":"再等两分钟 · 远处的车灯"}],["$","meta","3",{"property":"og:description","content":"匹诺曹原本只是留下看车，车灯真正出现时，他的想法却越来越靠近出发。危险的决定并非突然从天而降，而是由一次次不愿结束谈话、一次次推迟离开累积起来的。"}],["$","meta","4",{"name":"twitter:card","content":"summary"}],["$","meta","5",{"name":"twitter:title","content":"再等两分钟 · 远处的车灯"}],["$","meta","6",{"name":"twitter:description","content":"匹诺曹原本只是留下看车，车灯真正出现时，他的想法却越来越靠近出发。危险的决定并非突然从天而降，而是由一次次不愿结束谈话、一次次推迟离开累积起来的。"}],["$","link","7",{"rel":"icon","href":"/pinocchio/favicon.svg"}],["$","$L5","8",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"LTnFIT1edtlDV2oUQ7oKr"}

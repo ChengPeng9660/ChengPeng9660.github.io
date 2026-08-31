@@ -1,0 +1,52 @@
+木偶奇遇记 · 奇遇之书
+Third-party notices
+
+This application uses the following open-source software. License texts are
+distributed alongside this notice at the URLs below.
+
+Phaser 4.2.1 — https://github.com/phaserjs/phaser
+MIT License. Copyright (c) 2026 Richard Davey, Phaser Studio Inc.
+/licenses/phaser.txt
+
+StPageFlip 2.0.7 — https://github.com/Nodlik/StPageFlip
+MIT License. Copyright (c) 2020 Nodlik.
+/licenses/page-flip.txt
+
+Lucide React 1.35.0 — https://github.com/lucide-icons/lucide
+ISC License; some icons derived from Feather under MIT.
+/licenses/lucide.txt
+
+React and React DOM — https://github.com/facebook/react
+MIT License.
+/licenses/react.txt
+
+Next.js — https://github.com/vercel/next.js
+MIT License.
+/licenses/next.txt
+
+Game architecture references (not bundled runtime software):
+OpenAI Game Studio skills — https://github.com/openai/plugins/tree/main/plugins/game-studio
+No third-party skill scripts are executed by the website.
+
+The full edition is an original child-friendly Chinese retelling covering all
+36 chapters of Carlo Collodi's The Adventures of Pinocchio (1883). It is not a
+word-for-word translation and does not quote a modern Chinese translation.
+The earlier six-chapter abridgment remains separately accessible.
+
+33 full-edition chapter illustrations are from the 1902 Italian edition,
+illustrated by Carlo Chiostri and engraved by A. Bongini, digitized in Project
+Gutenberg eBook 52484. Project Gutenberg identifies this edition as public domain
+in the United States; this is not a statement of copyright status worldwide.
+Source: https://www.gutenberg.org/ebooks/52484
+Text and plates: https://www.gutenberg.org/cache/epub/52484/pg52484-images.html
+
+The chapter 5 and chapter 15 replacement illustrations, the existing six-scene
+atlas, and the social-preview image were generated for this project with AI
+assistance. Chapter 30 deliberately reuses the atlas carousel as an explicitly
+labelled imagined scene. It is not a historical illustration. No new chapter 30
+image is represented as generated or reviewed. The original chapter 15 hanging
+illustration is excluded from the published assets.
+
+The production asset register and chapter-by-chapter sources are documented in
+docs/fullbook/ASSET_SOURCES.md and app/book/art-data.json. Original plate files
+retain their native dimensions; they are not described as high-resolution art.

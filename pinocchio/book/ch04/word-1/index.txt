@@ -1,0 +1,19 @@
+1:"$Sreact.fragment"
+2:I[9194,["89","static/chunks/89-cdd4db9e80f67514.js","377","static/chunks/377-2657b60acd4117d4.js","177","static/chunks/app/layout-b245ae8e89f95e57.js"],"default"]
+3:I[5544,[],""]
+4:I[5694,[],""]
+5:I[89,["89","static/chunks/89-cdd4db9e80f67514.js","345","static/chunks/app/not-found-b3ef5c7e7f080003.js"],""]
+7:I[2229,[],"OutletBoundary"]
+8:"$Sreact.suspense"
+b:I[2229,[],"ViewportBoundary"]
+d:I[2229,[],"MetadataBoundary"]
+f:I[6740,[],"default",1]
+:HL["/pinocchio/_next/static/css/f6c4b91ce3fee591.css","style"]
+0:{"P":null,"c":["","book","ch04","word-1",""],"q":"","i":false,"f":[[["",{"children":[["path","book/ch04/word-1","c",null],{"children":["__PAGE__",{}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/pinocchio/_next/static/css/f6c4b91ce3fee591.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"zh-CN","children":["$","body",null,{"style":{"--story-atlas-image":"url(\"/pinocchio/images/story-atlas.png\")"},"children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"className":"missing-page","children":[["$","span",null,{"children":"这一页，被风轻轻翻过去了。"}],["$","h1",null,{"children":"回到故事里吧"}],["$","p",null,{"children":"没有找到这个章节或线索，已经读过的进度还在。"}],["$","$L5",null,{"href":"/atlas","className":"gold-button","children":"打开冒险地图"}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]}]]}],{"children":[["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":["$L6",null,["$","$L7",null,{"children":["$","$8",null,{"name":"Next.MetadataOutlet","children":"$@9"}]}]]}],{},null,false,null]},null,false,"$@a"]},null,false,null],["$","$1","h",{"children":[null,["$","$Lb",null,{"children":"$Lc"}],["$","div",null,{"hidden":true,"children":["$","$Ld",null,{"children":["$","$8",null,{"name":"Next.Metadata","children":"$Le"}]}]}],null]}],false]],"m":"$undefined","G":["$f",[]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"LTnFIT1edtlDV2oUQ7oKr"}
+10:[]
+a:"$W10"
+6:null
+c:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+11:I[7072,[],"IconMark"]
+9:null
+e:[["$","title","0",{"children":"墙上的老住客 · 手艺 · 奇遇之书"}],["$","meta","1",{"name":"description","content":"需要学习和练习才能掌握的制作或劳动本领。"}],["$","meta","2",{"property":"og:title","content":"墙上的老住客 · 手艺"}],["$","meta","3",{"property":"og:description","content":"需要学习和练习才能掌握的制作或劳动本领。"}],["$","meta","4",{"property":"og:image","content":"https://chengpeng9660.github.io/pinocchio/images/fullbook/ch04-pg-ill26.jpg"}],["$","meta","5",{"property":"og:image:width","content":"250"}],["$","meta","6",{"property":"og:image:height","content":"457"}],["$","meta","7",{"property":"og:image:alt","content":"匹诺曹手拿木锤，抬头面对墙上的会说话的蟋蟀。"}],["$","meta","8",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","9",{"name":"twitter:title","content":"墙上的老住客 · 手艺"}],["$","meta","10",{"name":"twitter:description","content":"需要学习和练习才能掌握的制作或劳动本领。"}],["$","meta","11",{"name":"twitter:image","content":"https://chengpeng9660.github.io/pinocchio/images/fullbook/ch04-pg-ill26.jpg"}],["$","link","12",{"rel":"icon","href":"/pinocchio/favicon.svg"}],["$","$L11","13",{}]]
