@@ -3,277 +3,137 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Auditable Politics, Finance, and Weather weak-pair aggregation results at the 1,000-common-event threshold.">
-  <title>Weak-pair aggregation explorer</title>
+  <meta name="description" content="Group, pair, and event-level weak-pair aggregation results for Politics, Finance, and Weather.">
+  <title>Weak-pair aggregation data</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to results</a>
-
-  <header class="site-header">
-    <a class="wordmark" href="#top" aria-label="Weak-pair aggregation explorer home">
-      <span class="wordmark-mark" aria-hidden="true">A</span>
-      <span>Aggregation Atlas</span>
-    </a>
-    <nav aria-label="Primary navigation">
-      <a href="#overview">Overview</a>
-      <a href="#report">Report</a>
-      <a href="#explorer">Explorer</a>
-      <a href="#methods">Methods</a>
-    </nav>
+  <header>
+    <div>
+      <h1>Weak-pair aggregation data</h1>
+      <p>Politics, Finance, and Weather · common-event threshold = 1,000</p>
+    </div>
+    <a id="pdf-link" class="button" href="#" download>Download 23-group PDF</a>
   </header>
 
-  <main id="main">
-    <section class="hero" id="top">
-      <div class="hero-copy">
-        <p class="eyebrow">Politics · Finance · Weather</p>
-        <h1>Weak-pair aggregation,<br><em>row by row.</em></h1>
-        <p class="hero-lede">
-          Browse every legal group at the 1,000-common-event threshold. Compare learned
-          linear pooling with our learned log-odds rule, then inspect the exact member
-          forecasts and reconstructed aggregate predictions behind each result.
-        </p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#explorer">Explore groups</a>
-          <a class="button button-secondary" id="hero-pdf-link" href="#report">Open the report</a>
-        </div>
-      </div>
-      <div class="hero-visual" aria-label="Illustration of two forecast signals combined into an aggregate">
-        <div class="signal signal-one"><span>p₁</span></div>
-        <div class="signal signal-two"><span>p₂</span></div>
-        <svg viewBox="0 0 500 320" role="img" aria-label="Two input forecast curves converging into one aggregate curve">
-          <defs>
-            <linearGradient id="aggregateGradient" x1="0" x2="1">
-              <stop offset="0" stop-color="#4f207f"/>
-              <stop offset="1" stop-color="#148a8a"/>
-            </linearGradient>
-          </defs>
-          <path class="gridline" d="M24 76H476M24 160H476M24 244H476"/>
-          <path class="input-path path-one" d="M30 76C116 76 146 88 205 140C246 176 275 178 310 173"/>
-          <path class="input-path path-two" d="M30 244C116 244 146 232 205 180C246 144 275 142 310 147"/>
-          <path class="output-path" d="M310 160C372 160 407 145 470 107"/>
-          <circle class="join" cx="310" cy="160" r="13"/>
-          <text x="372" y="94">q</text>
-        </svg>
-        <p>Frozen weights · identical held-out rows</p>
+  <main>
+    <section class="summary" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Dataset summary</h2>
+      <p id="overall-summary">Loading…</p>
+      <div class="table-wrap compact-table">
+        <table>
+          <thead>
+            <tr><th>Event type</th><th>Groups</th><th>Weak-pair occurrences</th></tr>
+          </thead>
+          <tbody id="type-summary-body"></tbody>
+        </table>
       </div>
     </section>
 
-    <section class="section overview" id="overview">
-      <div class="section-heading">
-        <p class="eyebrow">Frozen scope</p>
-        <h2>One threshold, three event types</h2>
-        <p>All counts below use the same question-disjoint split and the same eligible groups as the report.</p>
-      </div>
-      <div class="metric-grid" id="metric-grid" aria-live="polite">
-        <div class="metric-card skeleton"></div>
-        <div class="metric-card skeleton"></div>
-        <div class="metric-card skeleton"></div>
-        <div class="metric-card skeleton"></div>
-      </div>
-      <div class="table-card summary-card">
-        <div class="card-heading">
-          <div>
-            <p class="eyebrow">Method comparison</p>
-            <h3>Pair-level results by event type</h3>
-          </div>
-          <span class="scope-chip">Threshold = 1,000</span>
-        </div>
-        <div class="table-scroll">
-          <table class="summary-table">
-            <thead>
-              <tr>
-                <th>Event type</th>
-                <th>Groups</th>
-                <th>Weak pairs</th>
-                <th>Log-odds lower Brier</th>
-                <th>Linear lower Brier</th>
-                <th>Log-odds strict wins</th>
-                <th>Linear strict wins</th>
-              </tr>
-            </thead>
-            <tbody id="type-summary-body">
-              <tr><td colspan="7">Loading verified results…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="section report-section" id="report">
-      <div class="section-heading split-heading">
-        <div>
-          <p class="eyebrow">Paper-ready artifact</p>
-          <h2>The complete 23-group report</h2>
-          <p>Finance, Politics, and Weather group figures, restricted to the 1,000-event threshold.</p>
-        </div>
-        <a class="button button-secondary" id="pdf-download" href="#" download>Download PDF</a>
-      </div>
-      <div class="pdf-frame-wrap">
-        <iframe id="pdf-frame" title="Threshold-1000 group report" loading="lazy"></iframe>
-      </div>
-    </section>
-
-    <section class="section explorer-section" id="explorer">
-      <div class="section-heading">
-        <p class="eyebrow">Interactive ledger</p>
-        <h2>Inspect a group and every forecast row</h2>
-        <p>Select an event type, group, and weak pair. Aggregate predictions are reconstructed in the browser from the frozen weights.</p>
-      </div>
-
-      <div class="explorer-shell">
-        <aside class="control-panel" aria-label="Explorer controls">
-          <div class="control-block">
-            <span class="control-label">Event type</span>
-            <div class="type-tabs" id="type-tabs" role="tablist" aria-label="Event type"></div>
-          </div>
-          <label class="field-label" for="group-select">Group</label>
+    <section aria-labelledby="explorer-heading">
+      <h2 id="explorer-heading">Group and pair explorer</h2>
+      <div class="selectors">
+        <label>
+          <span>Group</span>
           <select id="group-select"></select>
-          <label class="field-label" for="pair-select">Weak-model pair</label>
+        </label>
+        <label>
+          <span>Pair within group</span>
           <select id="pair-select"></select>
-          <div class="selection-note" id="selection-note" aria-live="polite">Loading group…</div>
-          <div class="download-stack">
-            <a class="button button-primary" id="download-original" href="#" download>Original predictions</a>
-            <button class="button button-secondary" id="download-pair" type="button">Selected-pair CSV</button>
-            <a class="text-link" id="download-json" href="#" download>Raw group JSON</a>
+        </label>
+      </div>
+
+      <div class="group-meta">
+        <h3 id="group-title">Loading group…</h3>
+        <p id="group-description"></p>
+      </div>
+
+      <div class="pair-summary-grid">
+        <div>
+          <h3>Selected models: group-level test Brier</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Member</th><th>Model</th><th>Test Brier</th></tr></thead>
+              <tbody id="member-table-body"></tbody>
+            </table>
           </div>
-        </aside>
-
-        <div class="explorer-content">
-          <article class="group-header-card">
-            <div>
-              <div class="chip-row" id="group-chips"></div>
-              <h3 id="group-title">Loading…</h3>
-              <p id="group-subtitle"></p>
-            </div>
-            <div class="strongest-model" id="strongest-model"></div>
-          </article>
-
-          <div class="two-column-grid">
-            <article class="table-card">
-              <div class="card-heading compact">
-                <div>
-                  <p class="eyebrow">Individuals</p>
-                  <h3>Member performance</h3>
-                </div>
-              </div>
-              <div class="table-scroll fixed-height">
-                <table>
-                  <thead><tr><th>Model</th><th>Test Brier</th><th>Test ECE</th></tr></thead>
-                  <tbody id="member-table-body"></tbody>
-                </table>
-              </div>
-            </article>
-
-            <article class="table-card">
-              <div class="card-heading compact">
-                <div>
-                  <p class="eyebrow">Selected pair</p>
-                  <h3 id="pair-heading">Aggregation methods</h3>
-                </div>
-              </div>
-              <div class="table-scroll fixed-height">
-                <table class="method-table">
-                  <thead>
-                    <tr><th>Method</th><th>Weight on first</th><th>1 − Brier</th><th>1 − ECE</th><th>vs. strongest</th><th>vs. pair best</th></tr>
-                  </thead>
-                  <tbody id="method-table-body"></tbody>
-                </table>
-              </div>
-            </article>
+        </div>
+        <div>
+          <h3>Aggregation methods: group-level test Brier</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Method</th><th>Weight on Model 1</th><th>Test Brier</th></tr></thead>
+              <tbody id="method-table-body"></tbody>
+            </table>
           </div>
-
-          <article class="figure-card">
-            <div class="card-heading">
-              <div>
-                <p class="eyebrow">Group figure</p>
-                <h3>All individuals and weak-pair aggregates</h3>
-              </div>
-              <a id="figure-download" class="text-link" href="#" download>Open PNG</a>
-            </div>
-            <img id="group-figure" alt="Selected group results figure" loading="lazy">
-          </article>
-
-          <article class="prediction-card">
-            <div class="card-heading prediction-heading">
-              <div>
-                <p class="eyebrow">Forecast-level evidence</p>
-                <h3>Original and aggregate predictions</h3>
-              </div>
-              <div class="row-count" id="row-count"></div>
-            </div>
-            <div class="prediction-controls">
-              <fieldset class="segmented" id="split-filter">
-                <legend class="sr-only">Dataset split</legend>
-                <label><input type="radio" name="split" value="test" checked><span>Test</span></label>
-                <label><input type="radio" name="split" value="train"><span>Train</span></label>
-                <label><input type="radio" name="split" value="all"><span>All</span></label>
-              </fieldset>
-              <label class="search-field">
-                <span class="sr-only">Search events</span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.4-4.4m2.4-5.1a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
-                <input id="event-search" type="search" placeholder="Search question, event ID, or source">
-              </label>
-              <label class="page-size-label">Rows
-                <select id="page-size"><option>25</option><option selected>50</option><option>100</option></select>
-              </label>
-            </div>
-            <div class="table-scroll prediction-scroll">
-              <table class="prediction-table" id="prediction-table">
-                <thead id="prediction-table-head"></thead>
-                <tbody id="prediction-table-body"></tbody>
-              </table>
-            </div>
-            <div class="pagination">
-              <button type="button" class="icon-button" id="page-prev" aria-label="Previous page">←</button>
-              <span id="page-status">Page 1</span>
-              <button type="button" class="icon-button" id="page-next" aria-label="Next page">→</button>
-            </div>
-          </article>
         </div>
       </div>
-    </section>
 
-    <section class="section methods-section" id="methods">
-      <div class="section-heading">
-        <p class="eyebrow">Reproduction contract</p>
-        <h2>What the page computes</h2>
+      <div class="group-figure-block">
+        <div class="figure-heading">
+          <h3>Group figure from the PDF</h3>
+          <a id="figure-download" href="#" download>Open PNG</a>
+        </div>
+        <img id="group-figure" alt="Selected group figure from the PDF">
       </div>
-      <div class="method-grid">
-        <article>
-          <span class="method-index">01</span>
-          <h3>Frozen split</h3>
-          <p>Base questions are split by <code>(source, event_id)</code> with seed <code>20260913</code>. Every direction of the same base question stays on one side.</p>
-        </article>
-        <article>
-          <span class="method-index">02</span>
-          <h3>Learned linear pool</h3>
-          <p><span class="formula">q<sub>P</sub> = wp<sub>1</sub> + (1 − w)p<sub>2</sub></span>, with <span class="formula">w ∈ [0,1]</span> fitted on the training half.</p>
-        </article>
-        <article>
-          <span class="method-index">03</span>
-          <h3>Our log-odds</h3>
-          <p><span class="formula">q<sub>L</sub> = σ(w logit(p<sub>1</sub>) + (1 − w) logit(p<sub>2</sub>))</span>, using the frozen training weight and boundary clip <span class="formula">ε = .02</span>.</p>
-        </article>
-        <article>
-          <span class="method-index">04</span>
-          <h3>Row-level provenance</h3>
-          <p>The table retains each aligned forecast instance. Scores use direction-aware event identity and event-balanced Brier weighting.</p>
-        </article>
+
+      <div class="event-heading">
+        <div>
+          <h3>Event-level predictions and Brier losses</h3>
+          <p>Repeated event IDs correspond to distinct forecast instances; no rows are averaged.</p>
+        </div>
+        <div class="downloads">
+          <button id="download-table" class="button" type="button">Download current table CSV</button>
+          <a id="download-original" href="#" download>Full group CSV.gz</a>
+          <a id="download-json" href="#" download>Raw group JSON</a>
+        </div>
+      </div>
+
+      <div class="filters">
+        <label>
+          <span>Split</span>
+          <select id="split-select">
+            <option value="test" selected>Test</option>
+            <option value="train">Train</option>
+            <option value="all">All</option>
+          </select>
+        </label>
+        <label class="search-label">
+          <span>Event ID</span>
+          <input id="event-search" type="search" placeholder="Search event ID">
+        </label>
+        <label>
+          <span>Rows per page</span>
+          <select id="page-size">
+            <option>25</option>
+            <option selected>50</option>
+            <option>100</option>
+          </select>
+        </label>
+        <span id="row-count" class="row-count"></span>
+      </div>
+
+      <div class="table-wrap event-table-wrap">
+        <table class="event-table">
+          <thead id="event-table-head"></thead>
+          <tbody id="event-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button type="button" id="page-prev">Previous</button>
+        <span id="page-status">Page 1</span>
+        <button type="button" id="page-next">Next</button>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>Forecast aggregation experiment freeze · generated from audited ledgers</p>
-    <a href="#top">Back to top ↑</a>
+    Fixed split seed 20260913 · weights learned on train and frozen on test · log-odds boundary ε = 0.02
   </footer>
 
-  <div class="loading-overlay" id="loading-overlay" role="status" aria-live="polite">
-    <span class="spinner" aria-hidden="true"></span>
-    <span>Loading frozen experiment data…</span>
-  </div>
+  <div id="loading" class="loading" role="status">Loading data…</div>
   <script src="app.js" defer></script>
 </body>
 </html>

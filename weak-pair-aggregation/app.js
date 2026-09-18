@@ -2,7 +2,6 @@
 
 const state = {
   manifest: null,
-  eventType: "finance",
   group: null,
   groupData: null,
   pair: null,
@@ -12,11 +11,7 @@ const state = {
   pageSize: 50,
 };
 
-const elements = {};
-
-function $(id) {
-  return document.getElementById(id);
-}
+const element = (id) => document.getElementById(id);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -27,21 +22,16 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function compactNumber(value) {
+function formatCount(value) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
-function score(value) {
+function formatScore(value) {
   return Number(value).toFixed(6);
 }
 
-function probability(value) {
+function formatPrediction(value) {
   return Number(value).toFixed(4);
-}
-
-function percentage(numerator, denominator) {
-  if (!denominator) return "0.00%";
-  return `${(100 * numerator / denominator).toFixed(2)}%`;
 }
 
 function clip(value, low = 0.02, high = 0.98) {
@@ -54,267 +44,206 @@ function logit(value) {
 
 function sigmoid(value) {
   if (value >= 0) return 1 / (1 + Math.exp(-value));
-  const exp = Math.exp(value);
-  return exp / (1 + exp);
+  const expValue = Math.exp(value);
+  return expValue / (1 + expValue);
 }
 
-function aggregatePredictions(row, pair) {
-  const pi = row.predictions[pair.member_i_index];
-  const pj = row.predictions[pair.member_j_index];
+function predictionsForRow(row) {
+  const pair = state.pair;
+  const p1 = row.predictions[pair.member_i_index];
+  const p2 = row.predictions[pair.member_j_index];
   const logMethod = pair.methods.find((method) => method.key === "our_log_odds");
   const linearMethod = pair.methods.find((method) => method.key === "linear_pool");
-  const qLog = sigmoid(
-    logMethod.weight_on_i * logit(clip(pi)) +
-    (1 - logMethod.weight_on_i) * logit(clip(pj))
+  const logPrediction = sigmoid(
+    logMethod.weight_on_i * logit(clip(p1)) +
+    (1 - logMethod.weight_on_i) * logit(clip(p2))
   );
-  const qLinear = linearMethod.weight_on_i * pi + (1 - linearMethod.weight_on_i) * pj;
-  return { qLog, qLinear };
+  const linearPrediction = linearMethod.weight_on_i * p1 + (1 - linearMethod.weight_on_i) * p2;
+  return {
+    p1,
+    p2,
+    logPrediction,
+    linearPrediction,
+    logBrier: (logPrediction - row.outcome) ** 2,
+    linearBrier: (linearPrediction - row.outcome) ** 2,
+  };
 }
 
 async function fetchJson(path) {
   const response = await fetch(path, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Failed to load ${path}: ${response.status}`);
+  if (!response.ok) throw new Error(`Could not load ${path}: ${response.status}`);
   return response.json();
 }
 
-function cacheElements() {
-  [
-    "metric-grid", "type-summary-body", "hero-pdf-link", "pdf-download", "pdf-frame",
-    "type-tabs", "group-select", "pair-select", "selection-note", "download-original",
-    "download-pair", "download-json", "group-chips", "group-title", "group-subtitle",
-    "strongest-model", "member-table-body", "pair-heading", "method-table-body",
-    "figure-download", "group-figure", "row-count", "event-search", "page-size",
-    "prediction-table-head", "prediction-table-body", "page-prev", "page-next",
-    "page-status", "loading-overlay",
-  ].forEach((id) => { elements[id] = $(id); });
-}
-
-function renderOverview() {
+function renderSummary() {
   const summary = state.manifest.summary;
-  const cards = [
-    [summary.event_types, "Event types", "Politics, Finance, and Weather"],
-    [summary.groups, "Legal groups", "Each has at least 1,000 shared events"],
-    [summary.weak_pair_occurrences, "Weak-pair occurrences", "Pairs may recur across distinct groups"],
-    [summary.aligned_group_forecast_instances, "Aligned forecast rows", "Exact rows exported at group level"],
-  ];
-  elements["metric-grid"].innerHTML = cards.map(([value, label, detail]) => `
-    <article class="metric-card">
-      <span class="metric-value">${compactNumber(value)}</span>
-      <span class="metric-label">${escapeHtml(label)}</span>
-      <span class="metric-detail">${escapeHtml(detail)}</span>
-    </article>
-  `).join("");
-
-  elements["type-summary-body"].innerHTML = state.manifest.type_summary.map((row) => `
+  element("overall-summary").textContent =
+    `${summary.event_types} event types, ${formatCount(summary.groups)} groups, ` +
+    `${formatCount(summary.weak_pair_occurrences)} weak-pair occurrences, and ` +
+    `${formatCount(summary.aligned_group_forecast_instances)} aligned forecast rows.`;
+  element("type-summary-body").innerHTML = state.manifest.type_summary.map((row) => `
     <tr>
       <td>${escapeHtml(row.label)}</td>
-      <td>${compactNumber(row.groups)}</td>
-      <td>${compactNumber(row.pairs)}</td>
-      <td>${compactNumber(row.log_lower_brier)} <span class="fraction">(${percentage(row.log_lower_brier, row.pairs)})</span></td>
-      <td>${compactNumber(row.linear_lower_brier)} <span class="fraction">(${percentage(row.linear_lower_brier, row.pairs)})</span></td>
-      <td>${compactNumber(row.log_strict)} <span class="fraction">(${percentage(row.log_strict, row.pairs)})</span></td>
-      <td>${compactNumber(row.linear_strict)} <span class="fraction">(${percentage(row.linear_strict, row.pairs)})</span></td>
+      <td class="number">${formatCount(row.groups)}</td>
+      <td class="number">${formatCount(row.pairs)}</td>
     </tr>
   `).join("");
-  elements["hero-pdf-link"].href = state.manifest.pdf;
-  elements["pdf-download"].href = state.manifest.pdf;
-  elements["pdf-frame"].src = `${state.manifest.pdf}#page=1&view=FitH`;
+  element("pdf-link").href = state.manifest.pdf;
 }
 
-function eventTypeGroups() {
-  return state.manifest.groups.filter((group) => group.event_type === state.eventType);
-}
-
-function renderTypeTabs() {
-  elements["type-tabs"].innerHTML = state.manifest.type_summary.map((row) => `
-    <button type="button" role="tab" data-event-type="${escapeHtml(row.event_type)}"
-      aria-selected="${row.event_type === state.eventType}">${escapeHtml(row.label)}</button>
-  `).join("");
-  elements["type-tabs"].querySelectorAll("button").forEach((button) => {
-    button.addEventListener("click", async () => {
-      if (state.eventType === button.dataset.eventType) return;
-      state.eventType = button.dataset.eventType;
-      state.page = 1;
-      renderTypeTabs();
-      renderGroupOptions();
-      await selectGroup(eventTypeGroups()[0]);
-    });
-  });
+function groupLabel(group) {
+  const sameType = state.manifest.groups.filter((item) => item.event_type === group.event_type);
+  const withinType = sameType.findIndex((item) => item.group_id === group.group_id) + 1;
+  return `${group.event_type_label} group ${withinType} · ${group.group_size} models · ` +
+    `${group.pairs.length} pairs · ${formatCount(group.common_events)} events`;
 }
 
 function renderGroupOptions() {
-  const groups = eventTypeGroups();
-  elements["group-select"].innerHTML = groups.map((group, index) => `
-    <option value="${escapeHtml(group.group_id)}">
-      Group ${index + 1} · ${group.group_size} models · ${group.pairs.length} pairs · ${compactNumber(group.common_events)} events
-    </option>
+  element("group-select").innerHTML = state.manifest.groups.map((group) => `
+    <option value="${escapeHtml(group.group_id)}">${escapeHtml(groupLabel(group))}</option>
   `).join("");
 }
 
 async function selectGroup(group) {
-  if (!group) return;
-  elements["loading-overlay"].classList.remove("hidden");
+  element("loading").classList.remove("hidden");
   state.group = group;
-  elements["group-select"].value = group.group_id;
   state.groupData = await fetchJson(group.data_json);
   state.pair = group.pairs[0];
   state.page = 1;
+  element("group-select").value = group.group_id;
   renderPairOptions();
-  renderGroup();
-  elements["loading-overlay"].classList.add("hidden");
+  renderSelectedPair();
+  element("loading").classList.add("hidden");
 }
 
 function renderPairOptions() {
-  elements["pair-select"].innerHTML = state.group.pairs.map((pair) => {
-    const winner = pair.brier_winner === "our_log_odds" ? "log-odds lower" : pair.brier_winner === "linear_pool" ? "linear lower" : "tie";
-    return `<option value="${pair.order}">${pair.order}. ${escapeHtml(pair.model_i)} + ${escapeHtml(pair.model_j)} · ${winner}</option>`;
-  }).join("");
-  elements["pair-select"].value = state.pair.order;
+  element("pair-select").innerHTML = state.group.pairs.map((pair) => `
+    <option value="${pair.order}">${pair.order}. ${escapeHtml(pair.model_i)} + ${escapeHtml(pair.model_j)}</option>
+  `).join("");
+  element("pair-select").value = state.pair.order;
 }
 
-function methodStatus(method) {
-  if (method.strict) return '<span class="status win">Beats strongest</span>';
-  if (method.within_5pct) return '<span class="status near">Within 5%</span>';
-  return '<span class="status miss">Outside 5%</span>';
+function memberByName(name) {
+  return state.group.members.find((member) => member.name === name);
 }
 
-function pairBestStatus(method) {
-  return method.beats_pair_best
-    ? '<span class="status win">Improves pair</span>'
-    : '<span class="status miss">No improvement</span>';
-}
-
-function renderGroup() {
+function renderSelectedPair() {
   const group = state.group;
   const pair = state.pair;
-  const groups = eventTypeGroups();
-  const groupNumber = groups.findIndex((item) => item.group_id === group.group_id) + 1;
-  elements["group-chips"].innerHTML = `
-    <span class="chip">${escapeHtml(group.event_type_label)}</span>
-    <span class="chip teal">Threshold 1,000</span>
-    <span class="chip gold">${group.group_size} models</span>
+  element("group-title").textContent = groupLabel(group);
+  element("group-description").textContent =
+    `Group ID ${group.group_id} · ${formatCount(group.train_events)} train events · ` +
+    `${formatCount(group.test_events)} test events · strongest individual: ${group.strong_model} ` +
+    `(test Brier ${formatScore(group.strong_test_brier)}).`;
+
+  const model1 = memberByName(pair.model_i);
+  const model2 = memberByName(pair.model_j);
+  element("member-table-body").innerHTML = `
+    <tr><td>Model 1</td><td>${escapeHtml(pair.model_i)}</td><td class="number">${formatScore(model1.test_brier)}</td></tr>
+    <tr><td>Model 2</td><td>${escapeHtml(pair.model_j)}</td><td class="number">${formatScore(model2.test_brier)}</td></tr>
   `;
-  elements["group-title"].textContent = `${group.event_type_label} group ${groupNumber}`;
-  elements["group-subtitle"].textContent = `${compactNumber(group.common_events)} common events · ${compactNumber(group.common_instances)} aligned forecast rows · ${group.pairs.length} weak-pair occurrences · ID ${group.group_id_short}…`;
-  elements["strongest-model"].innerHTML = `Strongest individual by test Brier<strong>${escapeHtml(group.strong_model)}</strong><span>Brier ${score(group.strong_test_brier)}</span>`;
-  elements["selection-note"].innerHTML = `<strong>${escapeHtml(pair.model_i)}</strong><br>+ ${escapeHtml(pair.model_j)}<br><span>${group.train_events} train / ${group.test_events} test events</span>`;
-
-  const members = [...group.members].sort((a, b) => a.test_brier - b.test_brier);
-  elements["member-table-body"].innerHTML = members.map((member) => `
-    <tr class="${member.name === group.strong_model ? "best-model-row" : ""}">
-      <td>${escapeHtml(member.name)}${member.name === group.strong_model ? " · strongest" : ""}</td>
-      <td class="numeric">${score(member.test_brier)}</td>
-      <td class="numeric">${score(member.test_ece)}</td>
-    </tr>
-  `).join("");
-
-  elements["pair-heading"].textContent = `${pair.model_i} + ${pair.model_j}`;
-  elements["method-table-body"].innerHTML = pair.methods.map((method) => `
+  element("method-table-body").innerHTML = pair.methods.map((method) => `
     <tr>
       <td>${escapeHtml(method.label)}</td>
-      <td class="numeric">${Number(method.weight_on_i).toFixed(4)}</td>
-      <td class="numeric">${score(1 - method.test_brier)}</td>
-      <td class="numeric">${score(1 - method.test_ece)}</td>
-      <td>${methodStatus(method)}</td>
-      <td>${pairBestStatus(method)}</td>
+      <td class="number">${Number(method.weight_on_i).toFixed(6)}</td>
+      <td class="number">${formatScore(method.test_brier)}</td>
     </tr>
   `).join("");
 
-  elements["group-figure"].src = group.figure;
-  elements["group-figure"].alt = `${group.event_type_label} group ${groupNumber}: individual and aggregate 1 minus Brier and 1 minus ECE`;
-  elements["figure-download"].href = group.figure;
-  elements["download-original"].href = group.original_csv_gz;
-  elements["download-json"].href = group.data_json;
-  renderPredictionTable();
+  element("group-figure").src = `${group.figure}?v=${group.data_json_sha256.slice(0, 12)}`;
+  element("group-figure").alt = `${group.event_type_label} group figure from the PDF`;
+  element("figure-download").href = group.figure;
+  element("download-original").href = group.original_csv_gz;
+  element("download-json").href = group.data_json;
+  renderEventTable();
 }
 
 function filteredRows() {
-  if (!state.groupData) return [];
   const query = state.search.trim().toLocaleLowerCase();
   return state.groupData.rows.filter((row) => {
     if (state.split !== "all" && row.split !== state.split) return false;
     if (!query) return true;
     const event = state.groupData.events[String(row.event)];
-    return [event.source, event.event_id, event.direction, event.question]
-      .some((value) => String(value ?? "").toLocaleLowerCase().includes(query));
+    return String(event.event_id).toLocaleLowerCase().includes(query);
   });
 }
 
-function renderPredictionTable() {
-  const members = state.groupData.members;
-  elements["prediction-table-head"].innerHTML = `
+function renderEventTable() {
+  const pair = state.pair;
+  element("event-table-head").innerHTML = `
     <tr>
-      <th>Event / forecast instance</th>
-      <th>Split</th>
-      <th class="numeric">Outcome</th>
-      ${members.map((name) => `<th class="numeric">${escapeHtml(name)}</th>`).join("")}
-      <th class="numeric aggregate-column">Our log-odds</th>
-      <th class="numeric linear-column">Learned linear</th>
+      <th>Event ID</th>
+      <th class="number">Model 1 prediction<br><small>${escapeHtml(pair.model_i)}</small></th>
+      <th class="number">Model 2 prediction<br><small>${escapeHtml(pair.model_j)}</small></th>
+      <th class="number log-column">Our log-odds prediction</th>
+      <th class="number linear-column">Linear pool prediction</th>
+      <th class="number log-column">Our log-odds Brier</th>
+      <th class="number linear-column">Linear pool Brier</th>
     </tr>
   `;
 
   const rows = filteredRows();
-  const pages = Math.max(1, Math.ceil(rows.length / state.pageSize));
-  state.page = Math.min(state.page, pages);
+  const pageCount = Math.max(1, Math.ceil(rows.length / state.pageSize));
+  state.page = Math.min(state.page, pageCount);
   const start = (state.page - 1) * state.pageSize;
-  const visible = rows.slice(start, start + state.pageSize);
-  elements["prediction-table-body"].innerHTML = visible.map((row) => {
+  const pageRows = rows.slice(start, start + state.pageSize);
+  element("event-table-body").innerHTML = pageRows.map((row) => {
     const event = state.groupData.events[String(row.event)];
-    const aggregate = aggregatePredictions(row, state.pair);
+    const result = predictionsForRow(row);
     return `
       <tr>
-        <td title="${escapeHtml(event.question)}">
-          <span class="event-title">${escapeHtml(event.question || `${event.source} ${event.event_id}`)}</span>
-          <span class="event-meta">${escapeHtml(event.source)} · ${escapeHtml(event.event_id)} · ${escapeHtml(event.direction)} · occurrence ${row.event_occurrence_in_split}</span>
-        </td>
-        <td>${escapeHtml(row.split)}</td>
-        <td class="numeric">${probability(row.outcome)}</td>
-        ${row.predictions.map((value) => `<td class="numeric">${probability(value)}</td>`).join("")}
-        <td class="numeric aggregate-column">${probability(aggregate.qLog)}</td>
-        <td class="numeric linear-column">${probability(aggregate.qLinear)}</td>
+        <td title="${escapeHtml(event.question)}">${escapeHtml(event.event_id)}</td>
+        <td class="number">${formatPrediction(result.p1)}</td>
+        <td class="number">${formatPrediction(result.p2)}</td>
+        <td class="number log-column">${formatPrediction(result.logPrediction)}</td>
+        <td class="number linear-column">${formatPrediction(result.linearPrediction)}</td>
+        <td class="number log-column">${formatScore(result.logBrier)}</td>
+        <td class="number linear-column">${formatScore(result.linearBrier)}</td>
       </tr>
     `;
-  }).join("") || '<tr><td colspan="99">No forecast rows match this filter.</td></tr>';
-  elements["row-count"].textContent = `${compactNumber(rows.length)} rows`;
-  elements["page-status"].textContent = `Page ${state.page} of ${pages}`;
-  elements["page-prev"].disabled = state.page <= 1;
-  elements["page-next"].disabled = state.page >= pages;
+  }).join("") || '<tr><td colspan="7">No matching rows.</td></tr>';
+
+  element("row-count").textContent = `${formatCount(rows.length)} rows`;
+  element("page-status").textContent = `Page ${state.page} of ${pageCount}`;
+  element("page-prev").disabled = state.page <= 1;
+  element("page-next").disabled = state.page >= pageCount;
 }
 
-function csvCell(value) {
+function csvValue(value) {
   const text = String(value ?? "");
   return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
-function downloadSelectedPairCsv() {
-  const members = state.groupData.members;
+function downloadCurrentTable() {
+  const pair = state.pair;
   const headers = [
-    "instance", "panel_row", "overall_panel_row", "split", "source", "event_id", "direction",
-    "question", "event_occurrence_in_split", "outcome", "event_weight",
-    ...members.map((name) => `prediction::${name}`),
-    "pair_model_i", "pair_model_j", "our_log_odds_weight_on_i", "learned_linear_weight_on_i",
-    "our_log_odds_prediction", "learned_linear_prediction",
+    "event_id",
+    `model_1_prediction::${pair.model_i}`,
+    `model_2_prediction::${pair.model_j}`,
+    "our_log_odds_prediction",
+    "linear_pool_prediction",
+    "our_log_odds_brier",
+    "linear_pool_brier",
   ];
-  const lines = [headers.map(csvCell).join(",")];
-  state.groupData.rows.forEach((row) => {
+  const lines = [headers.map(csvValue).join(",")];
+  filteredRows().forEach((row) => {
     const event = state.groupData.events[String(row.event)];
-    const aggregate = aggregatePredictions(row, state.pair);
-    const logMethod = state.pair.methods.find((method) => method.key === "our_log_odds");
-    const linearMethod = state.pair.methods.find((method) => method.key === "linear_pool");
-    const values = [
-      row.instance, row.panel_row, row.overall_panel_row, row.split, event.source, event.event_id,
-      event.direction, event.question, row.event_occurrence_in_split, row.outcome, row.event_weight,
-      ...row.predictions,
-      state.pair.model_i, state.pair.model_j, logMethod.weight_on_i, linearMethod.weight_on_i,
-      aggregate.qLog, aggregate.qLinear,
-    ];
-    lines.push(values.map(csvCell).join(","));
+    const result = predictionsForRow(row);
+    lines.push([
+      event.event_id,
+      result.p1,
+      result.p2,
+      result.logPrediction,
+      result.linearPrediction,
+      result.logBrier,
+      result.linearBrier,
+    ].map(csvValue).join(","));
   });
   const blob = new Blob([`${lines.join("\n")}\n`], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `${state.group.event_type}-group-${state.group.display_order}-pair-${state.pair.order}-predictions.csv`;
+  link.download = `${state.group.event_type}-group-${state.group.display_order}-pair-${pair.order}-${state.split}.csv`;
   document.body.appendChild(link);
   link.click();
   link.remove();
@@ -322,55 +251,51 @@ function downloadSelectedPairCsv() {
 }
 
 function bindEvents() {
-  elements["group-select"].addEventListener("change", async (event) => {
-    const group = eventTypeGroups().find((item) => item.group_id === event.target.value);
+  element("group-select").addEventListener("change", async (event) => {
+    const group = state.manifest.groups.find((item) => item.group_id === event.target.value);
     await selectGroup(group);
   });
-  elements["pair-select"].addEventListener("change", (event) => {
+  element("pair-select").addEventListener("change", (event) => {
     state.pair = state.group.pairs.find((pair) => pair.order === Number(event.target.value));
     state.page = 1;
-    renderGroup();
+    renderSelectedPair();
   });
-  document.querySelectorAll('input[name="split"]').forEach((input) => {
-    input.addEventListener("change", (event) => {
-      state.split = event.target.value;
-      state.page = 1;
-      renderPredictionTable();
-    });
+  element("split-select").addEventListener("change", (event) => {
+    state.split = event.target.value;
+    state.page = 1;
+    renderEventTable();
   });
-  elements["event-search"].addEventListener("input", (event) => {
+  element("event-search").addEventListener("input", (event) => {
     state.search = event.target.value;
     state.page = 1;
-    renderPredictionTable();
+    renderEventTable();
   });
-  elements["page-size"].addEventListener("change", (event) => {
+  element("page-size").addEventListener("change", (event) => {
     state.pageSize = Number(event.target.value);
     state.page = 1;
-    renderPredictionTable();
+    renderEventTable();
   });
-  elements["page-prev"].addEventListener("click", () => {
+  element("page-prev").addEventListener("click", () => {
     state.page = Math.max(1, state.page - 1);
-    renderPredictionTable();
+    renderEventTable();
   });
-  elements["page-next"].addEventListener("click", () => {
+  element("page-next").addEventListener("click", () => {
     state.page += 1;
-    renderPredictionTable();
+    renderEventTable();
   });
-  elements["download-pair"].addEventListener("click", downloadSelectedPairCsv);
+  element("download-table").addEventListener("click", downloadCurrentTable);
 }
 
 async function init() {
-  cacheElements();
   bindEvents();
   try {
     state.manifest = await fetchJson("data/manifest.json");
-    renderOverview();
-    renderTypeTabs();
+    renderSummary();
     renderGroupOptions();
-    await selectGroup(eventTypeGroups()[0]);
+    await selectGroup(state.manifest.groups[0]);
   } catch (error) {
     console.error(error);
-    elements["loading-overlay"].innerHTML = `<span>Could not load the frozen data: ${escapeHtml(error.message)}</span>`;
+    element("loading").textContent = error.message;
   }
 }
 
