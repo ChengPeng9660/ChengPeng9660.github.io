@@ -2,5 +2,5 @@
 2:I[89,["89","static/chunks/89-cdd4db9e80f67514.js","345","static/chunks/app/not-found-b3ef5c7e7f080003.js"],""]
 3:I[2229,[],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"className":"missing-page","children":[["$","span",null,{"children":"这一页，被风轻轻翻过去了。"}],["$","h1",null,{"children":"回到故事里吧"}],["$","p",null,{"children":"没有找到这个章节或线索，已经读过的进度还在。"}],["$","$L2",null,{"href":"/atlas","className":"gold-button","children":"打开冒险地图"}]]}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"LTnFIT1edtlDV2oUQ7oKr"}
+0:{"rsc":["$","$1","c",{"children":[["$","main",null,{"className":"missing-page","children":[["$","span",null,{"children":"这一页，被风轻轻翻过去了。"}],["$","h1",null,{"children":"回到故事里吧"}],["$","p",null,{"children":"没有找到这个章节或线索，已经读过的进度还在。"}],["$","$L2",null,{"href":"/atlas","className":"gold-button","children":"打开冒险地图"}]]}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"_ZjTGUIglFXVHP_BlT5hG"}
 5:null

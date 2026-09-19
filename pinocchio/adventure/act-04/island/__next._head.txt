@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[2229,[],"ViewportBoundary"]
+3:I[2229,[],"MetadataBoundary"]
+4:"$Sreact.suspense"
+5:I[7072,[],"IconMark"]
+0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"重新学习 · 勤劳岛 · 木偶奇遇记"}],["$","meta","1",{"name":"description","content":"用行动换来食物与消息"}],["$","meta","2",{"property":"og:title","content":"重新学习 · 勤劳岛"}],["$","meta","3",{"property":"og:description","content":"用行动换来食物与消息"}],["$","meta","4",{"name":"twitter:card","content":"summary"}],["$","meta","5",{"name":"twitter:title","content":"重新学习 · 勤劳岛"}],["$","meta","6",{"name":"twitter:description","content":"用行动换来食物与消息"}],["$","link","7",{"rel":"icon","href":"/pinocchio/favicon.svg"}],["$","$L5","8",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"_ZjTGUIglFXVHP_BlT5hG"}
