@@ -101,9 +101,12 @@ jobs:
           from pathlib import Path
           p = Path('test_workshop.py')
           t = p.read_text()
+          t = t.replace('from playwright.sync_api import sync_playwright', 'from playwright.sync_api import sync_playwright, expect')
           t = t.replace("errors=[];page.on('pageerror',lambda e:errors.append(str(e)))", "errors=[];page.on('pageerror',lambda e:(errors.append(str(e)),print('PAGEERROR',str(e),flush=True)));page.on('console',lambda m:print('BROWSER',m.type,m.text,flush=True) if m.type in ['error','warning'] else None)")
           t = t.replace("frame.get_by_role('button',name='出发吧',exact=True).click()", "frame.get_by_role('button',name='出发吧',exact=True).click();page.wait_for_timeout(500);print('AFTER_START',frame.locator('body').inner_text(),flush=True);page.screenshot(path=str(OUT/'after-start.png'))")
-          t = t.replace("page.wait_for_function('document.querySelector(\"#source\").value.includes(\"little seed\")',timeout=45000)", "expect(page.locator('#source')).to_have_value(__import__('re').compile('little seed'),timeout=45000)")
+          t = t.replace("page.wait_for_function('document.querySelector(\"#source\").value.includes(\"little seed\")',timeout=45000)", "expect(page.locator('#source')).to_have_value(re.compile('little seed'),timeout=45000)")
+          t = t.replace("page.wait_for_function('document.querySelector(\"#generation-status\").textContent.includes(\"修改已应用\")')", "expect(page.locator('#generation-status')).to_contain_text('修改已应用')")
+          t = t.replace("page.wait_for_function('document.querySelector(\"#file-status\").textContent.includes(\"暂不支持\")')", "expect(page.locator('#file-status')).to_contain_text('暂不支持')")
           p.write_text(t)
           PY
           python -u test_workshop.py 2>&1 | tee workshop-qa/test.log
