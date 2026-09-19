@@ -1,0 +1,97 @@
+name: Prepare lesson workshop
+on:
+  push:
+    branches: [lesson-workshop-20260919]
+    paths:
+      - '.workshop-bootstrap/**'
+      - '.github/workflows/lesson-workshop-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lesson-workshop-bootstrap
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: lesson-workshop-20260919
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify and unpack reviewed source
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import base64, hashlib, io, tarfile
+          chunks = sorted(Path('.workshop-bootstrap').glob('*.b64'))
+          assert len(chunks) == 9, 'Missing source chunk'
+          data = base64.b64decode(''.join(p.read_text().strip() for p in chunks), validate=True)
+          assert hashlib.sha256(data).hexdigest() == '532ee2d29df01a8772522cbdb538d788a82223f27c51eebd840bd23944473a08', 'Source checksum mismatch'
+          with tarfile.open(fileobj=io.BytesIO(data), mode='r:xz') as archive:
+              for member in archive.getmembers():
+                  path = PurePosixPath(member.name)
+                  assert not path.is_absolute() and '..' not in path.parts
+                  assert member.isfile() and (member.name.startswith('lesson-workshop/') or member.name == 'test_workshop.py')
+              archive.extractall(filter='data')
+          print('Source checksum verified; existing homepage files unchanged.')
+          PY
+      - name: Vendor pinned PDF reader without font files
+        run: |
+          mkdir -p /tmp/workshop-pdf
+          npm install --prefix /tmp/workshop-pdf --ignore-scripts --omit=optional --no-audit --no-fund pdfjs-dist@6.3.289
+          python - <<'PY'
+          from pathlib import Path
+          import shutil, json
+          package = Path('/tmp/workshop-pdf/node_modules/pdfjs-dist')
+          target = Path('lesson-workshop/vendor')
+          target.mkdir(parents=True, exist_ok=True)
+          for name in ['pdf.min.mjs', 'pdf.worker.min.mjs']:
+              shutil.copy2(package/'build'/name, target/name)
+          for name in ['cmaps', 'wasm']:
+              if (package/name).exists():
+                  shutil.copytree(package/name, target/name, dirs_exist_ok=True)
+          shutil.copy2(package/'LICENSE', target/'PDFJS-LICENSE.txt')
+          metadata = json.loads((package/'package.json').read_text())
+          lock = json.loads(Path('/tmp/workshop-pdf/package-lock.json').read_text())
+          receipt = {'package':'pdfjs-dist','version':metadata['version'],'integrity':lock['packages']['node_modules/pdfjs-dist']['integrity'],'included':['pdf.min.mjs','pdf.worker.min.mjs','cmaps','wasm'],'excluded':'standard_fonts and all font files'}
+          (target/'version.json').write_text(json.dumps(receipt, indent=2))
+          assert not any(p.suffix.lower() in {'.ttf','.otf','.woff','.woff2','.pfb'} for p in target.rglob('*'))
+          PY
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright reportlab
+          python -m playwright install --with-deps chromium
+      - name: Syntax checks
+        run: |
+          node --check lesson-workshop/contract.js
+          node --check lesson-workshop/studio.js
+          node --check lesson-workshop/player.js
+      - name: Browser, PDF, preview and offline export tests
+        run: |
+          set -o pipefail
+          mkdir -p workshop-qa
+          python test_workshop.py 2>&1 | tee workshop-qa/test.log
+      - name: Preserve test evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lesson-workshop-qa
+          path: workshop-qa/
+          retention-days: 14
+      - name: Commit verified site on the isolated branch
+        run: |
+          mkdir -p lesson-workshop/qa
+          cp workshop-qa/results.json lesson-workshop/qa/results.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lesson-workshop test_workshop.py
+          git commit -m 'Build and verify lesson workshop with local PDF parsing'
+          git push origin HEAD:lesson-workshop-20260919
