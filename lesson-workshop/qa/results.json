@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "Landing page: no horizontal overflow at 1366/390/320/768 widths.",
+    "Mock API → validation → full 4-stage path → approval → download; export reopened through file://.",
+    "Keys stay out of request bodies, storage and exports; changing endpoint clears key/consent; edits clear approval; fabricated source quote rejected.",
+    "Existing cotton demo loads and reaches first reading task.",
+    "passed: two-page PDF locally parsed with vendored PDF.js"
+  ],
+  "browser_errors": [],
+  "pdf": "passed: two-page PDF locally parsed with vendored PDF.js",
+  "mode": "real HTTP and file URLs",
+  "live_paid_api": "Not tested: no user API key supplied. Mock is not a paid-service integration test."
+}

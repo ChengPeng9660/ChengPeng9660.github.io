@@ -1,0 +1,12 @@
+{
+  "package": "pdfjs-dist",
+  "version": "6.3.289",
+  "integrity": "sha512-ZHjSVpDa3D6izMq8/04lvkhkATUmL9px6ChPaXc1k6nU2Mrhlg1/7F0bdUqCwUjw3NsPTfPZsMDUU6ZIcRaeQw==",
+  "included": [
+    "pdf.min.mjs",
+    "pdf.worker.min.mjs",
+    "cmaps",
+    "wasm"
+  ],
+  "excluded": "standard_fonts and all font files"
+}

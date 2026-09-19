@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#FAF7EF">
+<meta name="description" content="课本游戏工坊：试玩棉花姑娘，上传自己的教材，使用自己的模型 API Key，把课文变成绘本风互动游戏。">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-q3Y9IBqdIJGhO1X5MNNBP0AKgu4Ogwa7j47HgJsvST0=' 'sha256-hKN87f8Zb93Rh/edqvHuuurzHzLYocVPkNeEDAo4DCI=' 'sha256-2/iUaalGZarHhfAjOf2YS3HPECuTtD22vBVagpZnLSQ=' 'sha256-RBs3LX42LR3EjIvi4v34Aa2v1gX9JcfUrNV5t2RMHo0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https:; frame-src 'self' blob:; worker-src 'self' blob:; font-src blob: data:; object-src 'none'; base-uri 'self'; form-action 'none'">
+<title>课本游戏工坊 · 让课文里的故事动起来</title>
+<link rel="icon" type="image/svg+xml" href="mark.svg"><link rel="stylesheet" href="studio.css">
+<script src="art.js" defer></script><script src="contract.js" defer></script><script src="studio.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#make">跳到制作区</a>
+<header class="topbar wrap"><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">✳</span><span>课本游戏工坊<small>让好奇心，翻开下一页</small></span></a><nav><a href="demo.html" target="_blank" rel="noopener">试玩示例</a><a href="#make" class="nav-primary">做一堂新课 <span aria-hidden="true">↗</span></a></nav></header>
+<main>
+<section class="hero wrap">
+<div class="hero-copy"><div class="eyebrow"><span></span> 为课堂，也为孩子的好奇心</div><h1>把这一课，<br>变成<span class="accent">小小冒险。</span></h1><p>上传教材，用自己的 AI。<br>让阅读、发现和表达，发生在一页绘本里。</p><div class="hero-actions"><a class="button primary" href="#make">制作我的课文游戏 <span aria-hidden="true">→</span></a><a class="button quiet" href="demo.html" target="_blank" rel="noopener">先玩《棉花姑娘》</a></div><div class="tiny-points"><span>无需安装</span><span>审美已就位</span><span>游戏可离线带走</span></div></div>
+<a class="demo-cover" href="demo.html" target="_blank" rel="noopener" aria-label="试玩棉花姑娘绘本游戏"><div class="cover-meta"><span>第一本 · 棉花姑娘</span><span class="live-badge">可直接试玩</span></div><div class="cover-title">谁来帮帮<br>棉花姑娘？</div><div id="cover-art" aria-hidden="true"></div><div class="cover-bottom"><span>一场棉田里的小冒险</span><span class="play" aria-hidden="true">↗</span></div></a>
+</section>
+<section class="principles wrap" aria-label="设计方式"><p><b>01</b><span><strong>少一点说明</strong>一次，只做一件事。</span></p><p><b>02</b><span><strong>多一点发现</strong>看故事，也回到课文。</span></p><p><b>03</b><span><strong>留一点表达</strong>把找到的理由，说出来。</span></p></section>
+<section class="workspace wrap" id="make"><div class="section-head"><div><div class="eyebrow">下一本，由你来写</div><h2>做一堂新课</h2></div><p>准备教材和自己的 API Key，<br>先选一课，生成后再核对。</p></div>
+<div class="studio-grid"><div class="editor-column">
+<section class="panel"><div class="panel-heading"><span class="step">1</span><h3>放入你的教材</h3><span class="tag">先在本机读取</span></div>
+<label class="dropzone" id="dropzone" for="file"><span class="upload-icon" aria-hidden="true">＋</span><strong>选择教材，或把文件拖到这里</strong><span>PDF · TXT · Markdown · 课文照片</span><small>整本 PDF 可选页；每次制作一篇课文。单文件不超过 50 MB。</small></label><input id="file" type="file" accept=".pdf,.txt,.md,.jpg,.jpeg,.png,.webp" multiple class="sr-only">
+<p id="file-status" class="status" role="status" aria-live="polite"></p>
+<div id="pdf-tools" hidden><div class="field-row"><label>从第几页<input id="page-from" type="number" min="1" value="1"></label><label>到第几页<input id="page-to" type="number" min="1" value="1"></label><button id="extract" class="button">读取这些页</button></div><p class="help">这里是 PDF 文件页码，不是书上印的页码；一次最多 12 页。</p></div>
+<div id="scan-tools" hidden><div id="scan-thumbs" class="scan-thumbs"></div><p class="help">图片或扫描页需要支持看图的模型。识别会发送所选图片并产生 API 费用；识别后先核对文字。</p><button id="recognize" class="button">用下方 API 识别课文</button></div>
+<div class="field-row top-gap"><label class="grow">课文名称<input id="lesson-title" placeholder="例如：棉花姑娘" maxlength="40"></label><label>适用年级<select id="grade"><option>小学一年级</option><option selected>小学二年级</option><option>小学三年级</option><option>小学四年级</option><option>小学五年级</option><option>小学六年级</option><option>初中</option></select></label></div>
+<div id="chapter-row" hidden><label>检测到的章节<select id="chapter"></select></label><p class="help">可选择一个片段，也可在下方自行调整；其他内容没有发送给模型。</p></div>
+<label class="top-gap">本课原文 <span class="optional">也可以直接粘贴</span><textarea id="source" rows="7" placeholder="把本课完整文字放在这里。保留原句、对话和必要练习，不用写游戏规则。" spellcheck="false"></textarea></label><div class="under-input"><span id="char-count">0 字 / 本课最多 24,000 字符</span><button id="sample" class="text-button">填入原创练习材料</button></div>
+<label class="check-row"><input id="source-ok" type="checkbox"><span>我已核对文字，并有权使用这份教学材料。</span></label>
+<details class="subtle"><summary>再告诉工坊一点课堂需求（可选）</summary><div class="field-row"><label>学科<select id="subject"><option>语文</option><option>数学</option><option>英语</option><option>科学</option><option>其他</option></select></label><label>任务数量<select id="task-count"><option value="4">4 个 · 轻课堂</option><option value="6" selected>6 个 · 标准课堂</option><option value="8">8 个 · 延伸课堂</option></select></label></div><label>希望重点学什么？<input id="goal" maxlength="200" placeholder="例如：读好角色对话，用原文说理由"></label></details>
+</section>
+<section class="panel"><div class="panel-heading"><span class="step">2</span><h3>连接你的 AI</h3><button id="clear-key" class="text-button push-right">清除密钥</button></div>
+<div class="field-row"><label>API 服务商<select id="provider"><option value="openrouter">OpenRouter</option><option value="deepseek">DeepSeek</option><option value="openai">OpenAI</option><option value="custom">自定义兼容接口</option></select></label><label class="grow">模型名称<input id="model" value="openai/gpt-4.1-mini" maxlength="120" autocomplete="off"></label></div>
+<label class="top-gap">API Key / Token<input id="api-key" type="password" placeholder="仅粘贴你自己的专用密钥" autocomplete="off" spellcheck="false"></label>
+<div id="endpoint-field" hidden><label class="top-gap">Base URL<input id="endpoint" type="url" placeholder="https://你的服务商/v1" autocomplete="off"></label><p class="help">仅支持 Chat Completions 兼容接口。必须使用 HTTPS，并允许本网站的跨域请求。</p></div>
+<div class="endpoint-note">将请求发送到 <code id="destination">openrouter.ai</code></div>
+<label class="check-row"><input id="api-consent" type="checkbox"><span id="consent-text">允许将本课文字／明确选中的图片发送给上述服务商，费用由我的 API 账户承担。</span></label>
+<p class="help" id="key-notice">密钥不上传到 GitHub，不写入游戏或浏览器存储；关闭页面后不保留。网页内用钥仍有浏览器扩展、同源脚本等风险，请用限额、可撤销的专用密钥。正式校级使用建议接自有网关。</p>
+<div class="generate-row"><button id="generate" class="button primary grow">生成绘本游戏 <span aria-hidden="true">✦</span></button><button id="cancel" class="button" hidden>停止</button></div>
+<p id="generation-status" class="status" role="status" aria-live="polite"></p><div id="progress" class="progress" hidden><span></span></div>
+</section></div>
+<aside class="preview-column"><section class="panel preview-panel"><div class="panel-heading"><span class="step">3</span><h3>试玩，再带进课堂</h3><span id="draft-badge" class="tag">等待新故事</span></div>
+<div id="preview-empty" class="preview-empty"><div id="empty-art" aria-hidden="true"></div><h4>下一场冒险，<br>从你的课本开始。</h4><p>生成后在这里试玩。<br>配色、留白和字号已经准备好了。</p><a class="text-button" href="demo.html" target="_blank" rel="noopener">先看完整示例 ↗</a></div>
+<div id="preview-ready" hidden><div class="preview-toolbar"><button id="restart-preview" class="text-button">重新试玩</button><button id="full-preview" class="text-button">放大试玩 ↗</button></div><iframe id="preview" title="生成的课文游戏预览" sandbox="allow-scripts" allow="autoplay" referrerpolicy="no-referrer"></iframe><div id="usage" class="help"></div><details id="review-details"><summary>核对与修改任务</summary><div id="review-fields"></div><button id="apply-edits" class="button">更新试玩</button></details><label class="check-row"><input id="approved" type="checkbox"><span>我已核对题目、答案、原文依据和课堂适配。</span></label><div class="download-row"><button id="download-html" class="button primary" disabled>下载离线游戏 ↓</button><button id="download-json" class="button">保存可编辑数据</button></div><p class="help">学生玩游戏不需要密钥。导出包含本课文字与教师参考；分享前请再确认版权与内容。</p></div>
+</section><div class="quiet-note"><span aria-hidden="true">✳</span><p><strong>教学严谨，留给老师。<br>探索的快乐，留给孩子。</strong><br>AI 草稿会核对引用是否来自原文，但题目是否合理，仍需要老师把关。</p></div><details class="panel small-panel"><summary>已有课件数据？继续编辑</summary><label class="top-gap">导入本网站导出的 JSON<input type="file" id="import-json" accept=".json"></label></details></aside></div>
+</section>
+<section class="wrap faq"><h2>开始前的小问题</h2><details><summary>必须购买新的工具吗？</summary><p>本网站没有账号和网站订阅。试玩示例不调用模型；生成、图片识别使用你自己的 API 账户，并按服务商计费。ChatGPT 等聊天产品订阅不等于 API 余额。</p></details><details><summary>支持整本教材和扫描版吗？</summary><p>PDF 在浏览器中打开后先选本课页码，读取文字；扫描页可以显式选择用视觉模型识别。支持 TXT、Markdown、JPG、PNG 和 WebP，不支持直接解析 DOCX。每次最多读取 12 页，识别最多 8 张图片，本课最多 24,000 字符。复杂公式、图表、拼音排版请人工核对；不把看不清的图形当作已知条件。</p></details><details><summary>为什么 API Key 正确，也可能无法生成？</summary><p>服务商必须提供 Chat Completions 兼容接口、开放相应模型权限，并允许浏览器跨域请求（CORS）。本网站不使用公共代理，也不会要求你关闭浏览器安全设置。接口不支持时，可换兼容服务商或使用自己的安全网关。</p></details><details><summary>每篇课文都有完全定制的插画吗？</summary><p>《棉花姑娘》是完整的定制示例。生成器使用同一套绘本设计语言、可复用的图形和任务组件；它不等于每篇课文都自动制作独立原画与任意新玩法。未知人物采用中性引导图，不把已有动物冒充课文角色。</p></details><details><summary>我的教材和密钥会在哪里？</summary><p>本网站没有接收教材或密钥的后端，也不主动写入浏览器持久存储。只有你点击生成或识别，所选内容和密钥才发往你确认的 API 服务商；服务商的数据政策另行适用。GitHub Pages 托管会记录访问日志。生成的学生游戏不调用 API。不要上传学生姓名、肖像或不必要的个人资料。</p></details></section>
+</main>
+<footer class="footer wrap"><span>课本游戏工坊 · 绘本课堂实验室</span><div><a href="https://github.com/ChengPeng9660/ChengPeng9660.github.io/tree/main/lesson-workshop" target="_blank" rel="noopener">查看源码 ↗</a><a href="README.md" target="_blank" rel="noopener">使用与边界</a></div></footer>
+<dialog id="fullscreen-dialog"><div class="modal-head"><strong>课堂试玩</strong><button id="close-full" class="button">关闭</button></div><div id="large-preview"></div></dialog>
+<div class="sr-only" id="announce" aria-live="polite"></div>
+<noscript>请使用启用了 JavaScript 的现代浏览器打开工坊。</noscript>
+</body></html>
