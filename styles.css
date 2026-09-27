@@ -263,8 +263,11 @@ ol li {
 .author__avatar img {
   display: block;
   width: 100%;
+  height: auto;
   max-width: 175px;
   min-width: 75px;
+  aspect-ratio: 1;
+  object-fit: cover;
   padding: 5px;
   border: 1px solid var(--lighter-gray);
   border-radius: 50%;
