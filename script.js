@@ -32,7 +32,7 @@ async function loadHomepageViewCount() {
   const timeout = setTimeout(() => controller.abort(), 5000);
 
   try {
-    const response = await fetch("COUNTER_ENDPOINT", {
+    const response = await fetch("https://chengpeng-homepage-counter.chengpeng9660.workers.dev/api/views", {
       method: "POST",
       credentials: "omit",
       cache: "no-store",
