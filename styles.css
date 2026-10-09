@@ -391,6 +391,32 @@ ol li {
   margin-bottom: 0.8em;
 }
 
+.site-footer {
+  width: min(calc(100% - 2em), var(--max-width));
+  margin: 2.5rem auto 0;
+  padding: 1.1rem 1rem 1.5rem;
+  border-top: 1px solid var(--lighter-gray);
+  color: var(--gray);
+  font-size: 12px;
+  text-align: center;
+}
+
+.page-view-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  white-space: nowrap;
+}
+
+.page-view-counter svg {
+  width: 15px;
+  height: 15px;
+}
+
+#homepage-view-count {
+  font-variant-numeric: tabular-nums;
+}
+
 @keyframes intro {
   from {
     opacity: 0;

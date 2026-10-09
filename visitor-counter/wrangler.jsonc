@@ -1,0 +1,17 @@
+{
+  "name": "chengpeng-homepage-counter",
+  "main": "worker.js",
+  "account_id": "877057fd4edb5cf6bbd3d03953302770",
+  "compatibility_date": "2026-05-22",
+  "workers_dev": true,
+  "preview_urls": false,
+  "durable_objects": {
+    "bindings": [
+      { "name": "HOMEPAGE_VIEWS", "class_name": "HomepageViews" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["HomepageViews"] }
+  ],
+  "observability": { "enabled": false }
+}
